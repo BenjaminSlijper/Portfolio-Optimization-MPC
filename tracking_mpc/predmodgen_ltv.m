@@ -1,19 +1,19 @@
-function [P,S] = predmodgen_ltv(ltvFunction,k,dim)
+function [T,S] = predmodgen_ltv(ltvFunction,k,dim)
 % Prediction matrices generation
 %
 % This function computes the prediction matrices P and S so that:
 % y_N = P * x_0 + S * u_N
 %
-% P = A(k+N-1)A(k+N-2) ... A(k)
+% T = A(k+N-1)A(k+N-2) ... A(k)
 % S = [A(k+N-1)A(k+N-2)...B(k), A(k+N-2)...B(k+1), ... , B(k+N-1)]
 
 % Prediction matrix from initial state
 
-P = eye(size(A0));
+T = eye(size(A0));
 
 for i=0:dim.N-1
     [A, ~] = ltvFunction(k+i);
-    P = A * P;
+    T = A * T;
 end
 
 % Prediction matrix from input
