@@ -5,13 +5,13 @@ function [A,B,C,D,E,dx0,x0,u0,y0,Delays] = ltvStockModel(k)
     
     % If data is not yet loaded, read from CSV files
     if isempty(apple) || isempty(boeing) || isempty(nvidia) || isempty(oneok)
-        apple = readmatrix("data_processed\apple_return.csv");
-        boeing = readmatrix("data_processed\boeing_return.csv");
-        nvidia = readmatrix("data_processed\nvidia_return.csv");
-        oneok = readmatrix("data_processed\oneok_return.csv");
+        apple = readmatrix("C:\Users\samue\apple_return.csv");
+        boeing = readmatrix("C:\Users\samue\boeing_return.csv");
+        nvidia = readmatrix("C:\Users\samue\nvidia_return.csv");
+        oneok = readmatrix("C:\Users\samue\oneok_return.csv");
     end
     
-    interest = 0.1; 
+    interest = 0.000274; 
     alpha = 0.0001; 
     beta = 0.0001;
     
@@ -19,17 +19,20 @@ function [A,B,C,D,E,dx0,x0,u0,y0,Delays] = ltvStockModel(k)
     boeing_return = boeing(:, 2);
     nvidia_return = nvidia(:, 2);
     oneok_return = oneok(:, 2);
+
+
     
-    A = diag([1 + apple_return(k+1); ...
-              1 + boeing_return(k+1); ...
-              1 + nvidia_return(k+1); ...
-              1 + oneok_return(k+1); ...
+    % Plot the Apple return data (only the second column as it's assumed to be the return values)
+    A = diag([1 + apple_return(k); ...
+              1 + boeing_return(k); ...
+              1 + nvidia_return(k); ...
+              1 + oneok_return(k); ...
               1 + interest]);
     
-    return_matrix = diag([1 + apple_return(k+1); ...
-              1 + boeing_return(k+1); ...
-              1 + nvidia_return(k+1); ...
-              1 + oneok_return(k+1)]);
+    return_matrix = diag([1 + apple_return(k); ...
+              1 + boeing_return(k); ...
+              1 + nvidia_return(k); ...
+              1 + oneok_return(k)]);
     
     final_row_B_1 = ones(1, length(return_matrix)) * (1 + interest) * (-1 - alpha);
     final_row_B_2 = ones(1, length(return_matrix)) * (1 + interest) * (1 - beta);
