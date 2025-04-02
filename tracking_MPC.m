@@ -8,6 +8,9 @@ Q = eye(dim.nx, dim.nx);
 R = eye(dim.nu, dim.nu);
 P = 10 * Q;  % make better P
 
+alpha = 0.0001;
+beta = 0.0001;
+
 
 Nsim = 1200;
 x0 = [0, 0, 0, 0, 100]';
@@ -19,22 +22,27 @@ y(1) = sum(x0);
 u_rec=zeros(dim.nu,Nsim+1);
 
 for k=1:Nsim
+    disp(k)
     % replace with optimal state space solution
     xr = [100, 100, 100, 100, 100]';
     ur = [0, 0, 0, 0, 0, 0, 0, 0]';
 
     [T,S] = predmodgen_ltv(@ltvStockModel, k, dim);
     [H,h,const] = costgen(T, S, Q, R, P, dim, x(:, k), xr, ur);
+    [A,b] = constraintgen(4, alpha, beta, T, S, dim, x(:, k));
     
     %Solve optimization problem    
                                   %define optimization variable
     % Constraint=[];                                                 %define constraints
     % uostar = sdpvar(dim.nu*dim.N,1);
     % Objective = 0.5*uostar'*H*uostar+h'*uostar;    %define cost function
-    % optimize(Constraint,Objective);                                %solve the problem
+    % options = sdpsettings('solver', 'quadprog');
+    % optimize(Constraint,Objective, options);                                %solve the problem
     % uostar=value(uostar);
-
-    uostar = quadprog(H, h);
+    warning off all
+    options = optimoptions('quadprog', 'Display', 'off');
+    uostar = quadprog(H, h, A, b, [], [], [], [], [], options);
+    warning on all
 
     % Select the first input only
     u_rec(:,k)=uostar(1:dim.nu);

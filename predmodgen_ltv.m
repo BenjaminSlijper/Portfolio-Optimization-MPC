@@ -1,14 +1,14 @@
 function [T,S,p] = predmodgen_ltv(ltvFunction,k,dim)
-    T = zeros(dim.nx * (dim.N + 1), dim.nx);
-    S = zeros(dim.nx * (dim.N + 1), dim.nu * dim.N);
+    T = zeros(dim.nx * (dim.N), dim.nx);
+    S = zeros(dim.nx * (dim.N), dim.nu * dim.N);
 
     power_matrices = {eye(dim.nx)};
-    for i=1:dim.N
+    for i=1:dim.N - 1
         [A, ~] = ltvFunction(k+i-1);
         power_matrices{end+1} = power_matrices{i} * A;
     end
 
-    for i=0:dim.N
+    for i=0:dim.N - 1
         T(i * dim.nx + 1: (i+1) * dim.nx, :) = power_matrices{i+1};
         for j=0:dim.N
             if i > j
