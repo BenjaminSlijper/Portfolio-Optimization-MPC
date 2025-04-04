@@ -1,4 +1,4 @@
-function [A,B,C,D,E,dx0,x0,u0,y0,Delays] = ltvStockModel(k)
+function [A,B,C,D,E,dx0,x0,u0,y0,Delays,return_matrix] = ltvStockModel(k)
 
     % Declare persistent variables
     persistent apple boeing nvidia oneok;

@@ -1,4 +1,4 @@
-function [A,b]=constraintgen(n, alpha, beta, T, S, dim, x0)
+function [A,b,F,E,e]=constraintgen(n, alpha, beta, T, S, dim, x0)
 % what is this n? is it n_inputs/2?
 F = [zeros(2*n, n+1) ; zeros(1,n) -1 ; -eye(n) zeros(n,1); zeros(1,n) -1];
 E = [-eye(2*n) ; (1+alpha)*ones(1,n) -(1+beta)*ones(1,n) ; -eye(n) eye(n); zeros(1,2*n)];
