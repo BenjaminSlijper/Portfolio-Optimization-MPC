@@ -8,12 +8,12 @@ dim.ny=1;     %output dimension
 dim.nu=8;     %input dimension
 dim.N=20;      %horizon
 
-Nsim = 1000;  %simulation time
+Nsim = 200;  %simulation time
 
 x0 = [0, 0, 0, 0, 100]';  %initial condition
-y_ref = 200;  %TODO find optimal y_ref in the MPC loop
+y_ref = 10000;  %TODO find optimal y_ref in the MPC loop
 
-Q = eye(dim.nx, dim.nx);
+Q = 50*eye(dim.nx, dim.nx);
 R = eye(dim.nu, dim.nu);
 
 alpha = 0.0001;
@@ -36,6 +36,10 @@ x(:,1)=x0;
 y = zeros(1, Nsim);  %output trajectory
 y(1) = sum(x0);
 
+uostar = zeros(dim.nu*dim.N, 1);
+opts = optimoptions('quadprog','Algorithm','active-set', 'Display', 'off');
+ws = optimwarmstart(uostar, opts);
+
 u_rec=zeros(dim.nu,Nsim+1);  %optimal inputs over time
 
 for k=1:Nsim
@@ -54,7 +58,8 @@ for k=1:Nsim
     %Solve optimization problem    
     warning off all
     options = optimoptions('quadprog', 'Display', 'off');
-    uostar = quadprog(H, h, A_ineq, b_ineq, [], [], [], [], [], options);
+    [ws,fval,eflag,output,lambda] = quadprog(H, h, A_ineq, b_ineq, [], [], [], [], ws);
+    uostar = ws.X;
     warning on all
 
     % Select the first input only
